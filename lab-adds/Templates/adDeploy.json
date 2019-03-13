@@ -232,7 +232,7 @@
     {
       "condition": "[not(equals(parameters('vmsAutoShutdownTime'), '9999'))]",
       "type": "Microsoft.DevTestLab/schedules",
-      "name": "[concat('shutdown-computevm', parameters('adVMName'))]",
+      "name": "[concat('shutdown-computevm-', parameters('adVMName'))]",
       "apiVersion": "2016-05-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
