@@ -64,7 +64,17 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
                        -DomainMode Default `
                        -ForestMode Default `
                        -Force `
-                       -SafeModeAdministratorPassword $smPassword 
+                       -SafeModeAdministratorPassword $smPassword     
+
+    #record that we got this far
+    New-Item -ItemType file "$($completeFile)$step"
+}
+
+$step=3
+if (!(Test-Path -Path "$($completeFile)$step")) {
+    $smPassword = (ConvertTo-SecureString $password -AsPlainText -Force)
+
+    #Install AD Child domain
     
     Install-ADDSDomain -CreateDnsDelegation `
                        -DomainMode Default `
@@ -79,7 +89,7 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
     New-Item -ItemType file "$($completeFile)$step"
 }
 
-$step=3
+$step=4
 if (!(Test-Path -Path "$($completeFile)$step")) {
     $Dns = "127.0.0.1"
     $IPType = "IPv4"
@@ -104,7 +114,7 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
     New-Item -ItemType file "$($completeFile)$step"
 }
 
-$step=4
+$step=5
 if (!(Test-Path -Path "$($completeFile)$step")) {
     # Configure the IP address and default gateway
     $adapter | New-NetIPAddress `

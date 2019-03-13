@@ -4,7 +4,7 @@
   "parameters": {
     "assetLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/vicperdana/active-directory-lab-hybrid-adfs/master/lab-hybrid-phs/",
+      "defaultValue": "https://raw.githubusercontent.com/vicperdana/iaasautomation/master/lab-adds/",
       "metadata": { "description": "This is the location in which all the linked templates are stored." }
     },
     "adminUsername": {

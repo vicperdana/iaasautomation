@@ -87,7 +87,8 @@
     "adPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
     "adNicName": "[concat('ad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
     "computeApiVersion": "2016-04-30-preview",
-    "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]"    
+    "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]",
+    "storageaccountType": "StandardSSD_LRS"    
   },
   "resources": [
     {
@@ -158,7 +159,10 @@
           },
           "osDisk": {
             "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "[variables('storageaccountType')]"
+           }
           }
         },
         "networkProfile": {
@@ -190,7 +194,7 @@
               "fileUris": [
                 "[variables('DeployADTemplateUri')]"
               ],
-              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('DeployADTemplate'), ' ', parameters('adDomainName'), ' ', parameters('adminPassword'))]"
+              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('DeployADTemplate'), ' ', parameters('adDomainName'), ' ', parameters('adminPassword'),' ', parameters('adChildDomainName'))]"
             }
           }
         }
