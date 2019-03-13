@@ -86,7 +86,7 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "adPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
     "adNicName": "[concat('ad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
-    "computeApiVersion": "2016-04-30-preview",
+    "computeApiVersion": "2018-04-01",
     "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]",
     "storageaccountType": "StandardSSD_LRS"    
   },
