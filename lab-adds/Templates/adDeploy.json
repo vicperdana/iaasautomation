@@ -56,6 +56,23 @@
       "type": "string",
       "defaultValue": "Standard_D1_v2",
       "metadata": { "description": "This is the allowed list of VM sizes" }
+    },
+    "vmsAutoShutdownTime": {
+      "type": "string",
+      "defaultValue": "1900",
+      "minLength": 4,
+      "maxLength": 4,
+      "metadata": {
+        "description": "The time at which VMs will be automatically shutdown (24h HHmm format). Set value to '9999' to NOT configure the auto shutdown."
+      }
+    },
+    "vmsTimeZone": {
+      "type": "string",
+      "defaultValue": "AUS Eastern Standard Time",
+      "minLength": 2,
+      "metadata": {
+        "description": "Time zone of the VMs. Type '[TimeZoneInfo]::GetSystemTimeZones().Id' in PowerShell to get the list. Note that 'UTC' works but 'UTC+xx' does NOT work."
+      }
     }
   },
   "variables": {
@@ -203,6 +220,29 @@
             "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('adNicName'))).ipConfigurations[0].properties.privateIPAddress]"
           }
         }
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('vmsAutoShutdownTime'), '9999'))]",
+      "type": "Microsoft.DevTestLab/schedules",
+      "name": "[concat(parameters('adVMName'),'shutdown-computevm')]",
+      "apiVersion": "2016-05-15",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('adVMName'))]"
+      ],
+      "properties": {
+        "status": "Enabled",
+        "taskType": "ComputeVmShutdownTask",
+        "dailyRecurrence": {
+          "time": "[parameters('vmsAutoShutdownTime')]"
+        },
+        "timeZoneId": "[parameters('vmsTimeZone')]",
+        "notificationSettings": {
+          "status": "Disabled",
+          "timeInMinutes": 30
+        },
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('adVMName'))]"
       }
     }
   ],
