@@ -17,6 +17,9 @@
         "metadata": {
           "description": "Location for all resources."
         }
+      },
+      "publicIPId" : {
+        "type": "string"
       }
     },
     "variables": {},
@@ -35,6 +38,9 @@
                 "privateIPAddress": "[parameters('privateIp')]",
                 "subnet": {
                   "id": "[parameters('subnetRef')]"
+                },
+                "publicIPAddress": {
+                    "id": "[parameters('publicIPId')]"
                 }
               }
             }
