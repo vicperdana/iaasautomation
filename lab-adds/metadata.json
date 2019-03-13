@@ -1,0 +1,7 @@
+﻿{
+  "itemDisplayName": "Active Directory Domain Services on Azure IaaS",
+  "description": "Using DSC and custom scripts, deploys a full AD DS with OU and test users.",
+  "summary": "Creates ADDS lab environment with OU and users",
+  "githubUsername": "vicperdana",
+  "dateUpdated": "2019-03-13"
+}
