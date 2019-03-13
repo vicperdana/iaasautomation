@@ -41,7 +41,6 @@ $parms=@{
     "assetLocation"               = $assetLocation;
     "virtualNetworkAddressRange"  = "10.$VNetAddrSpace2ndOctet.0.0/16";
     #The first IP deployed in the AD subnet, for the DC
-    "adIP"                        = "10.$VNetAddrSpace2ndOctet.1.4";
     #The first ADFS server deployed in the AD subnet - multiple farms will increment beyond this
     "adSubnetAddressRange"        = "10.$VNetAddrSpace2ndOctet.1.0/24";
     "dmzSubnetAddressRange"       = "10.$VNetAddrSpace2ndOctet.2.0/24";
