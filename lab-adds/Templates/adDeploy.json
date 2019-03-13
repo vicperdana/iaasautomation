@@ -259,7 +259,7 @@
   "outputs": {
     "ADVMFQDN": {
         "type": "string",
-        "value": "[reference(parameters('adVMName')).DnsSettings.Fqdn]"
+        "value": "[reference(variables('adPubIPName')).DnsSettings.Fqdn]"
     },
     "ADVMNIC": {
       "type": "object",
