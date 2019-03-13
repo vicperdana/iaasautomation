@@ -227,7 +227,7 @@
       "type": "Microsoft.DevTestLab/schedules",
       "name": "[concat(parameters('adVMName'),'shutdown-computevm')]",
       "apiVersion": "2016-05-15",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('adVMName'))]"
       ],
