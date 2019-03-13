@@ -4,7 +4,7 @@ Write-Host "Beginning deployment at $starttime"
 Import-Module Azure -ErrorAction SilentlyContinue
 
 #DEPLOYMENT OPTIONS
-    $templateToDeploy        = "NoClientDeploy.json"
+    $templateToDeploy        = "azuredeploy.json"
     # MUST be unique for all your simultaneous/co-existing deployments of this ADName in the same region
     $VNetAddrSpace2ndOctet   = "1"
 

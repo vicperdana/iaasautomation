@@ -100,11 +100,10 @@
           {
             "name": "[concat('ipconfig', parameters('deploymentNumber'))]",
             "properties": {
-              "privateIPAllocationMethod": "Static",
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[variables('adSubnetID')]"
               },
-              "privateIPAddress": "[parameters('adIP')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('adPubIPName'))]"
               }
