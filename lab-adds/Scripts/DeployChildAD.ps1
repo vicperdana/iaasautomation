@@ -56,11 +56,17 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
                            -IncludeManagementTools `
                            -IncludeAllSubFeature 
 
-    Install-ADDSForest -DomainName $domain `
+    #Install AD Child domain
+    
+    Install-ADDSDomain -CreateDnsDelegation `
                        -DomainMode Default `
-                       -ForestMode Default `
-                       -Force `
-                       -SafeModeAdministratorPassword $smPassword     
+                       -DomainType ChildDomain `
+                       -NewDomainName $child `
+                       -NewDomainNetBIOSName $child `
+                       -ParentDomainName $domain `
+                       -InstallDNS:$true `
+                       -Force:$true `
+                       -SafeModeAdministratorPassword $smPassword `
 
     #record that we got this far
     New-Item -ItemType file "$($completeFile)$step"

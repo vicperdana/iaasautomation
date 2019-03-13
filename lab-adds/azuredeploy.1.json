@@ -202,6 +202,63 @@
           "dnsIP": { "value": "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]" }
         }
       }
+    },
+    {
+      "name": "[concat(variables('adVMName'),'/Microsoft.Powershell.DSC')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "location": "[variables('location')]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "Microsoft.Resources/Deployments/adVM"
+      ],
+      "tags": {
+        "displayName": "adDSC"
+      },
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.21",
+        "forceUpdateTag": "1.02",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "modulesUrl": "[variables('adDSCTemplate')]",
+          "configurationFunction": "[variables('adDSCConfigurationFunction')]",
+          "properties": [
+            {
+              "Name": "AdminCreds",
+              "Value": {
+                "UserName": "[parameters('adminUsername')]",
+                "Password": "PrivateSettingsRef:AdminPassword"
+              },
+              "TypeName": "System.Management.Automation.PSCredential"
+            },
+            {
+              "Name": "usersArray",
+              "Value": "[parameters('usersArray')]",
+              "TypeName": "System.Object"
+            },
+            {
+              "Name": "UserCreds",
+              "Value": {
+                "UserName": "user",
+                "Password": "PrivateSettingsRef:UserPassword"
+              },
+              "TypeName": "System.Management.Automation.PSCredential"
+            },
+            {
+              "Name": "childDomain",
+              "Value": "[parameters('adChildDomainName')]",
+              "TypeName": "String"
+            }
+          ]
+        },
+        "protectedSettings": {
+          "Items": {
+            "AdminPassword": "[parameters('adminPassword')]",
+            "UserPassword": "[parameters('defaultUserPassword')]"
+          }
+        }
+      }
     }
   ],
   "outputs": {
