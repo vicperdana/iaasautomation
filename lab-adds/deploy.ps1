@@ -63,7 +63,7 @@ catch {
     Write-Host "Created new resource group $RGName."
 }
 $version ++
-$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterObject $parms -TemplateFile $TemplateFile -Name "adfsDeploy$version"  -Force -Verbose
+$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterObject $parms -TemplateFile $TemplateFile -Name "addsDeploy$version"  -Force -Verbose
 
 
 $endTime=Get-Date

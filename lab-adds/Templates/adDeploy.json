@@ -62,13 +62,15 @@
     "DeployADTemplate": "DeployAD.ps1",
     "DeployADTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/DeployAD.ps1')]",
     "adSubnetID": "[concat(variables('vnetID'),'/subnets/', parameters('adSubnetName'))]",
+    "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('adSubnetName'))]",
     "imageOffer": "WindowsServer",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageSKU": "2016-Datacenter",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "adPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
     "adNicName": "[concat('ad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
-    "computeApiVersion": "2016-04-30-preview"
+    "computeApiVersion": "2016-04-30-preview",
+    "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]"    
   },
   "resources": [
     {
@@ -165,9 +167,8 @@
           "properties": {
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
-            "forceUpdateTag": "1.0.1",
-            "typeHandlerVersion": "1.4",
-            "autoUpgradeMinorVersion": false,
+            "typeHandlerVersion": "1.9",
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
                 "[variables('DeployADTemplateUri')]"
@@ -177,6 +178,32 @@
           }
         }
       ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "updateIp",
+      "apiVersion": "2017-08-01",
+      "dependsOn": [
+        "[variables('adNicName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('updateip_templateUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[variables('adNicName')]"
+          },
+          "SubnetRef": {
+            "value": "[variables('adSubnetRef')]"
+          },
+          "privateIp": {
+            "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('adNicName'))).ipConfigurations[0].properties.privateIPAddress]"
+          }
+        }
+      }
     }
   ],
   "outputs": {

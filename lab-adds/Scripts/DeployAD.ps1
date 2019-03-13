@@ -61,13 +61,13 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
                            -IncludeAllSubFeature 
 
     Install-ADDSForest -DomainName $domain `
-                       -DomainMode Win2016 `
-                       -ForestMode Win2016 `
+                       -DomainMode Default `
+                       -ForestMode Default `
                        -Force `
                        -SafeModeAdministratorPassword $smPassword 
     
     Install-ADDSDomain -CreateDnsDelegation `
-                       -DomainMode Win2016 `
+                       -DomainMode Default `
                        -NewDomainName $child `
                        -ParentDomainName $domain `
                        -InstallDns `
