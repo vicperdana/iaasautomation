@@ -163,7 +163,7 @@
     {
       "name": "adVMs",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2018-04-01",
+      "apiVersion": "2017-05-10",
       "dependsOn": [
         "Microsoft.Resources/Deployments/virtualNetwork"
       ],
