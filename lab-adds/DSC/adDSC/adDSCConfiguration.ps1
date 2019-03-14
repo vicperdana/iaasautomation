@@ -112,18 +112,12 @@ configuration DomainController
         {
             SetScript = {
                 $wmiDomain = Get-WmiObject Win32_NTDomain
-                $mailDomain=(Get-WmiObject Win32_ComputerSystem).Domain
-                $server="$($wmiDomain[0].PSComputerName).$($wmiDomain[0].DomainName).$($wmiDomain[0].DnsForestName)"
                 $segments = @()
                 $segments += $wmiDomain[0].DomainName
                 $segments += $wmiDomain[0].DnsForestName.Split('.')
                 
                 $OU = "OU=OrgUsers, {0}" -f [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
-                
-                $folder=$using:DscWorkingFolder
-
-				$clearPw = $using:ClearDefUserPw
-				$Users = $using:usersArray
+                $Users = $using:usersArray
 
                 New-ADGroup -Name "Finance" -SamAccountName Finance -GroupCategory Security -GroupScope Global -DisplayName "Finance" -Path $ou -Description "Members of this group are Finance staff"
 

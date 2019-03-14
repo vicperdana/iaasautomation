@@ -275,7 +275,7 @@
             {
               "Name": "AdminCreds",
               "Value": {
-                "UserName": "[parameters('adminUsername')]",
+                "UserName": "[concat(parameters('adDomainName'),'\\', parameters('adminUsername'))]",
                 "Password": "PrivateSettingsRef:AdminPassword"
               },
               "TypeName": "System.Management.Automation.PSCredential"
