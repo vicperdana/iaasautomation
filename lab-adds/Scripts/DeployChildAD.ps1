@@ -61,8 +61,8 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
     Install-ADDSDomain -CreateDnsDelegation `
                        -DomainMode Default `
                        -DomainType ChildDomain `
-                       -NewDomainName $child `
-                       -NewDomainNetBIOSName $child `
+                       -NewDomainName $childDomain `
+                       -NewDomainNetBIOSName $childDomain `
                        -ParentDomainName $domain `
                        -InstallDNS:$true `
                        -Force:$true `
