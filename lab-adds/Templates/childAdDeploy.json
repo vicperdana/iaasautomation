@@ -2,11 +2,6 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "adIP": {
-      "type": "string",
-      "metadata": { "description": "The IP Addresses assigned to the domain controllers (a, b). Remember the first IP in a subnet is .4 e.g. 10.0.0.0/16 reserves 10.0.0.0-3. Specify one IP per server - must match numberofVMInstances or deployment will fail.s" },
-      "defaultValue": "10.0.1.4"
-    },
     "adminPassword": {
       "type": "securestring",
       "metadata": { "description": "Admin password" }
@@ -24,7 +19,7 @@
       "type": "string",
       "defaultValue": "[concat('adSubnet', parameters('deploymentNumber'))]"
     },
-    "adVMName": {
+    "childAdVMName": {
       "type": "string",
       "defaultValue": "AZAD"
     },
@@ -32,9 +27,9 @@
       "type": "string",
       "defaultValue": "contoso.com"
     },
-    "adChildDomainName": {
+    "childAdDomainName": {
       "type": "string",
-      "defaultValue": "child"
+      "defaultValue": "contoso.com"
     },
     "assetLocation": {
       "type": "string"
@@ -76,8 +71,8 @@
     }
   },
   "variables": {
-    "DeployADTemplate": "DeployAD.ps1",
-    "DeployADTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/DeployAD.ps1')]",
+    "DeployADTemplate": "DeployChildAD.ps1",
+    "DeployADTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/DeployChildAD.ps1')]",
     "adSubnetID": "[concat(variables('vnetID'),'/subnets/', parameters('adSubnetName'))]",
     "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('adSubnetName'))]",
     "imageOffer": "WindowsServer",
@@ -86,7 +81,6 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "adPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
     "adNicName": "[concat('ad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
-    "computeApiVersion": "2018-04-01",
     "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]",
     "storageaccountType": "StandardSSD_LRS"    
   },
@@ -102,7 +96,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[tolower(concat(parameters('adVMName'), parameters('deploymentNumber')))]"
+          "domainNameLabel": "[tolower(concat(parameters('childAdVMName'), parameters('deploymentNumber')))]"
         }
       }
     },
@@ -135,7 +129,7 @@
     {
       "apiVersion": "2018-04-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('adVMName')]",
+      "name": "[parameters('childAdVMName')]",
       "location": "[parameters('location')]",
       "tags": { "displayName": "adVM" },
       "dependsOn": [
@@ -146,7 +140,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[parameters('adVMName')]",
+          "computerName": "[parameters('childAdVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -180,7 +174,7 @@
           "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', concat(parameters('adVMName')))]"
+            "[concat('Microsoft.Compute/virtualMachines/', concat(parameters('childAdVMName')))]"
           ],
           "tags": {
             "displayName": "DeployAD"
@@ -194,7 +188,7 @@
               "fileUris": [
                 "[variables('DeployADTemplateUri')]"
               ],
-              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('DeployADTemplate'), ' ', parameters('adDomainName'), ' ', parameters('adminPassword'),' ', parameters('adChildDomainName'))]"
+              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('DeployADTemplate'), ' ', parameters('adDomainName'), ' ', parameters('adminPassword'),' ', parameters('childAdDomainName'))]"
             }
           }
         }
@@ -232,11 +226,11 @@
     {
       "condition": "[not(equals(parameters('vmsAutoShutdownTime'), '9999'))]",
       "type": "Microsoft.DevTestLab/schedules",
-      "name": "[concat('shutdown-computevm-', parameters('adVMName'))]",
+      "name": "[concat('shutdown-computevm-', parameters('childAdVMName'))]",
       "apiVersion": "2016-05-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('adVMName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('childAdVMName'))]"
       ],
       "properties": {
         "status": "Enabled",
@@ -249,14 +243,14 @@
           "status": "Disabled",
           "timeInMinutes": 30
         },
-        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('adVMName'))]"
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('childAdVMName'))]"
       }
     }
   ],
   "outputs": {
     "ADVMFQDN": {
         "type": "string",
-        "value": "[reference(parameters('adVMName')).DnsSettings.Fqdn]"
+        "value": "[reference(parameters('childAdVMName')).DnsSettings.Fqdn]"
     },
     "ADVMNIC": {
       "type": "object",

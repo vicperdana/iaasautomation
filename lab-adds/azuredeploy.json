@@ -27,7 +27,7 @@
       "defaultValue": "contoso.com",
       "metadata": { "description": "Two-part internal AD name - short/NB name will be first part ('contoso')." }
     },    
-    "adChildDomainName": {
+    "childAdDomainName": {
       "type": "string",
       "defaultValue": "child"
     },
@@ -80,13 +80,16 @@
   "variables": {
     "networkInterfaceName": "NIC",
     "addcVMNameSuffix": "dc",
+    "childaddcVMNameSuffix": "cdc",
     "location": "[resourceGroup().location]",
     "companyNamePrefix": "[split(parameters('adDomainName'),'.')[0]]",
     "adVMName": "[toupper(concat(variables('companyNamePrefix'), variables('addcVMNameSuffix')))]",
+    "childAdVMName" : "[toupper(concat(variables('companyNamePrefix'), variables('childaddcVMNameSuffix')))]",
     "adNSGName": "[concat('INT-AD', parameters('deploymentNumber'))]",
     "virtualNetworkName": "[concat(variables('companyNamePrefix'), parameters('deploymentNumber'), '-vnet')]",
     "adSubnetName": "[concat('adSubnet', parameters('deploymentNumber'))]",
     "adTemplateURI": "[concat(parameters('assetLocation'),'Templates/adDeploy.json')]",
+    "childAdTemplateURI": "[concat(parameters('assetLocation'),'Templates/childAdDeploy.json')]",
     "dmzNSGName": "[concat('DMZ-WAP', parameters('deploymentNumber'))]",
     "dmzSubnetName": "[concat('dmzSubnet', parameters('deploymentNumber'))]",
     "cliNSGName": "[concat('INT-CLI', parameters('deploymentNumber'))]",
@@ -95,8 +98,6 @@
     "vnetTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNet.json')]",
     "vnetDNSTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNetDNS.json')]",
     "adDSCTemplate": "[concat(parameters('assetLocation'),'DSC/adDSC.zip')]",
-    "publicIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-adfs'))]",
-    "WAPPubIpDnsFQDN": "[concat(variables('publicIPAddressDNSName'),'{0}.', toLower(replace(resourceGroup().location,' ','')),'.cloudapp.azure.com')]",    
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
     "subnets": [
       {
@@ -176,6 +177,32 @@
           "adDomainName": { "value": "[parameters('adDomainName')]" },
           "adSubnetName": { "value": "[variables('adSubnetName')]" },
           "adVMName": { "value": "[variables('adVMName')]" },
+          "assetlocation": { "value": "[parameters('assetLocation')]" },
+          "location": { "value": "[variables('location')]" },
+          "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
+          "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
+          "vmSize": { "value": "[parameters('vmSize')]" },
+          "deploymentNumber": { "value": "[parameters('deploymentNumber')]" }
+        }
+      }
+    },
+    {
+      "name": "childAdVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "dependsOn": [
+        "Microsoft.Resources/Deployments/virtualNetwork"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": { "uri": "[variables('childAdTemplateURI')]" },
+        "parameters": {
+          "adminPassword": { "value": "[parameters('adminPassword')]" },
+          "adminUsername": { "value": "[parameters('adminUsername')]" },
+          "adDomainName": { "value": "[parameters('adDomainName')]" },
+          "childAdDomainName": { "value": "[parameters('childAdDomainName')]" },
+          "adSubnetName": { "value": "[variables('adSubnetName')]" },
+          "childAdVMName": { "value": "[variables('childAdVMName')]" },
           "assetlocation": { "value": "[parameters('assetLocation')]" },
           "location": { "value": "[variables('location')]" },
           "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
