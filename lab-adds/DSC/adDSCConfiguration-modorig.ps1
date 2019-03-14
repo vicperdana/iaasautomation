@@ -14,12 +14,14 @@ configuration DomainController
 		[Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$UserCreds,
         
-    
+        [Parameter(Mandatory)]
+		[String]$childDomain,
+
         [Int]$RetryCount=20,
         [Int]$RetryIntervalSec=30
     )
-
-    $wmiDomain      = Get-WmiObject Win32_NTDomain -Filter "DnsForestName = '$( (Get-WmiObject Win32_ComputerSystem).Domain)'"
+    $parentDomain =  (Get-WmiObject Win32_ComputerSystem).Domain
+    $wmiDomain      = Get-WmiObject Win32_NTDomain -Filter "DomainName = '$childDomain.$parentDomain'"
     $shortDomain    = $wmiDomain.DomainName
     $DomainName     = $wmidomain.DnsForestName
     $ComputerName   = $wmiDomain.PSComputerName
