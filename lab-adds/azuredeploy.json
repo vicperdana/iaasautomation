@@ -191,7 +191,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
       "dependsOn": [
-        "Microsoft.Resources/Deployments/virtualNetwork"
+        "Microsoft.Resources/Deployments/adVM"
       ],
       "properties": {
         "mode": "Incremental",

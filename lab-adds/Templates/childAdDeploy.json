@@ -80,7 +80,7 @@
     "imageSKU": "2016-Datacenter",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "adPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
-    "adNicName": "[concat('ad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
+    "adNicName": "[concat('childad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
     "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]",
     "storageaccountType": "StandardSSD_LRS"    
   },
@@ -105,7 +105,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('adNicName')]",
       "location": "[parameters('location')]",
-      "tags": { "displayName": "adNIC" },
+      "tags": { "displayName": "childAdNIC" },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', variables('adPubIPName'))]"
       ],
