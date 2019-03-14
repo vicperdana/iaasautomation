@@ -182,6 +182,28 @@
       }
     },
     {
+      "name": "virtualNetworkDNSUpdate",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "Microsoft.Resources/Deployments/adVM"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": { "uri": "[variables('vnetDNSTemplateURI')]" },
+        "parameters": {
+          "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
+          "subnets": { "value": "[variables('subnets') ]" },
+          "virtualNetworkAddressRange": { "value": "[parameters('virtualNetworkAddressRange')]" },
+          "dnsIP": {
+            "value" : [
+              "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]"
+            ]
+          }    
+        }
+      }
+    },    
+    {
       "name": "childAdVM",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
@@ -208,7 +230,7 @@
       }
     },
     {
-      "name": "virtualNetworkDNSUpdate",
+      "name": "virtualNetworkDNSUpdateChild",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
@@ -226,9 +248,7 @@
               "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]",
               "[reference('childAdVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]"
             ]
-          }
-          
-        
+          }    
         }
       }
     }
