@@ -21,7 +21,7 @@
   "resources": [
     {
       "condition" : "[not(equals(parameters('dnsIP2'), 'null'))]",
-      "name": "[parameters('virtualNetworkName')]",
+      "name": "[concat(parameters('virtualNetworkName'),'-2dnsip')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[variables('location')]",
       "tags": { "displayName": "virtualNetwork" },
