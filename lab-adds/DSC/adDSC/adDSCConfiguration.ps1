@@ -107,7 +107,7 @@ configuration DomainController
                 return ($user -ine $null)
             }
             DependsOn  = '[Script]CreateOU'
-        },
+        }
         Script AddGroups
         {
             SetScript = {
@@ -129,8 +129,8 @@ configuration DomainController
 
                 New-ADGroup -Name "HR" -SamAccountName HR -GroupCategory Security -GroupScope Global -DisplayName "HR" -Path $ou -Description "Members of this group are HR staff"
 
-                Add-ADgroupMember -Identity Finance -Members $users[0],$users[1]
-                Add-ADgroupMember -Identity HR -Members $users[2]
+                Add-ADgroupMember -Identity Finance -Members $users[0].'SAM',$users[1].'SAM'
+                Add-ADgroupMember -Identity HR -Members $users[2].'SAM'
 
 
             }
