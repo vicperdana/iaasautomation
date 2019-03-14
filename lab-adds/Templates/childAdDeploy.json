@@ -79,7 +79,7 @@
     "imagePublisher": "MicrosoftWindowsServer",
     "imageSKU": "2016-Datacenter",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "adPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
+    "adPubIPName": "[concat('childAdPubIP', parameters('deploymentNumber'))]",
     "adNicName": "[concat('childad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
     "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]",
     "storageaccountType": "StandardSSD_LRS"    
