@@ -5,7 +5,14 @@
     "assetLocation": { "value": "https://raw.githubusercontent.com/vicperdana/iaasautomation/master/lab-adds/" },
     "adminUsername": { "value": "vperdana" },
     "deploymentNumber": {"value": "1" },
-    "adminPassword": { "value": "Pass1234##!!"},
+    "adminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/6d1eca2e-45dc-4dab-836a-49ee682dd37e/resourceGroups/rg-addslabdevops/providers/Microsoft.KeyVault/vaults/kvdevopslab"
+        },
+        "secretName": "adminPassword"
+      }
+    },
     "adDomainName": { "value": "vperdana.lab" },
     "childAdDomainName": { "value": "child" },
     "usersArray": {
@@ -16,7 +23,14 @@
         { "FName": "Sue", "LName": "Jackson", "SAM": "sjackson" }
       ]
     },
-    "defaultUserPassword": { "value" : "P@ssw0rd" },
+    "defaultUserPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/6d1eca2e-45dc-4dab-836a-49ee682dd37e/resourceGroups/rg-addslabdevops/providers/Microsoft.KeyVault/vaults/kvdevopslab"
+        },
+        "secretName": "defaultUserPassword"
+      }
+    },
     "vmSize": { "value": "Standard_A2_v2" },
     "virtualNetworkAddressRange": { "value": "10.0.0.0/16" },
     "adSubnetAddressRange": { "value": "10.0.1.0/24" },

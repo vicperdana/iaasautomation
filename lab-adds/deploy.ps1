@@ -5,6 +5,7 @@ Import-Module Azure -ErrorAction SilentlyContinue
 
 #DEPLOYMENT OPTIONS
     $templateToDeploy        = "azuredeploy.json"
+    $templateParamToDeploy        = "azuredeploy.parameters.json"
     # MUST be unique for all your simultaneous/co-existing deployments of this ADName in the same region
     $VNetAddrSpace2ndOctet   = "1"
 
@@ -54,6 +55,8 @@ $parms=@{
 $TemplateFile = "$($assetLocation)$templateToDeploy" + "?x=5"
 $templateFile
 
+$TemplateParamFile = "$($assetLocation)$templateParamToDeploy" + "?x=5"
+
 try {
     Get-AzureRmResourceGroup -Name $RGName -ErrorAction Stop
     Write-Host "Resource group $RGName exists, updating deployment"
@@ -63,7 +66,7 @@ catch {
     Write-Host "Created new resource group $RGName."
 }
 $version ++
-$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterObject $parms -TemplateFile $TemplateFile -Name "addsDeploy$version"  -Force -Verbose
+$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterFile $TemplateParamFile -TemplateFile $TemplateFile -Name "addsDeploy$version"  -Force -Verbose
 
 
 $endTime=Get-Date
