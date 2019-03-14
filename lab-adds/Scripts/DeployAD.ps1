@@ -65,7 +65,7 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
 
 $step=3
 if (!(Test-Path -Path "$($completeFile)$step")) {
-    $Dns = "127.0.0.1"
+    
     $IPType = "IPv4"
 
     # Retrieve the network adapter that you want to configure
@@ -90,6 +90,7 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
 
 $step=4
 if (!(Test-Path -Path "$($completeFile)$step")) {
+    $Dns = "127.0.0.1"
     # Configure the IP address and default gateway
     $adapter | New-NetIPAddress `
         -AddressFamily $IPType `
