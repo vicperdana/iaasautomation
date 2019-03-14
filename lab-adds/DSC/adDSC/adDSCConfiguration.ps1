@@ -136,7 +136,7 @@ configuration DomainController
             }
             GetScript =  { @{} }
             TestScript = { 
-				$group = get-aduser finance -ErrorAction SilentlyContinue
+				$group = get-adgroup -filter {samaccountname -eq "finance"}
                 return ($group -ine $null)
             }
             DependsOn  = '[Script]AddTestUsers'
