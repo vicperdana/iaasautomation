@@ -9,7 +9,11 @@
       "defaultValue": "10.0.0.0/16"
     },
     "subnets": { "type": "array" },
-    "dnsIP": { "type": "string" }
+    "dnsIP": { "type": "string" },
+    "dnsIP2": { 
+      "type": "string",
+      "defaultValue": "null"
+    }
   },
   "variables": {
     "location": "[resourceGroup().location]"
@@ -23,7 +27,7 @@
       "apiVersion": "2015-06-15",
       "properties": {
         "dhcpOptions": {
-          "dnsServers": [ "[parameters('dnsIP')]" ]
+          "dnsServers": [ "[parameters('dnsIP')]","[parameters('dnsIP2')]" ]
         },
         "addressSpace": {
           "addressPrefixes": [

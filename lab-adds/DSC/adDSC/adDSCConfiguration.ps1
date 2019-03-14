@@ -19,10 +19,10 @@ configuration DomainController
         [Int]$RetryIntervalSec=30
     )
 
-    $wmiDomain      = Get-WmiObject Win32_NTDomain -Filter "DnsForestName = '$( (Get-WmiObject Win32_ComputerSystem).Domain)'"
-    $shortDomain    = $wmiDomain.DomainName
-    $DomainName     = $wmidomain.DnsForestName
-    $ComputerName   = $wmiDomain.PSComputerName
+    $wmiDomain      = Get-WmiObject Win32_NTDomain
+    $shortDomain    = $wmiDomain[0].DomainName
+    $DomainName     = $wmidomain[0].DnsForestName
+    $ComputerName   = $wmiDomain[0].PSComputerName
 
     $CertPw         = $AdminCreds.Password
     $ClearPw        = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($CertPw))
@@ -44,13 +44,15 @@ configuration DomainController
         {
             SetScript = {
                 $wmiDomain = $using:wmiDomain
-                $segments = $wmiDomain.DnsForestName.Split('.')
+                $segments = @()
+                $segments += $wmiDomain[0].DomainName
+                $segments += $wmiDomain[0].DnsForestName.Split('.')
                 $path = [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
                 New-ADOrganizationalUnit -Name "OrgUsers" -Path $path
             }
             GetScript =  { @{} }
             TestScript = { 
-                $test=Get-ADOrganizationalUnit -Server "$using:ComputerName.$using:DomainName" -Filter 'Name -like "OrgUsers"' -ErrorAction SilentlyContinue
+                $test=Get-ADOrganizationalUnit -Server "$using:ComputerName.$using:shortDomain.$using:DomainName" -Filter 'Name -like "OrgUsers"' -ErrorAction SilentlyContinue
                 return ($test -ine $null)
             }
         }
@@ -58,10 +60,12 @@ configuration DomainController
         Script AddTestUsers
         {
             SetScript = {
-                $wmiDomain = Get-WmiObject Win32_NTDomain -Filter "DnsForestName = '$( (Get-WmiObject Win32_ComputerSystem).Domain)'"
-                $mailDomain=$wmiDomain.DnsForestName
-                $server="$($wmiDomain.PSComputerName).$($wmiDomain.DnsForestName)"
-                $segments = $wmiDomain.DnsForestName.Split('.')
+                $wmiDomain = Get-WmiObject Win32_NTDomain
+                $mailDomain=(Get-WmiObject Win32_ComputerSystem).Domain
+                $server="$($wmiDomain[0].PSComputerName).$($wmiDomain[0].DomainName).$($wmiDomain[0].DnsForestName)"
+                $segments = @()
+                $segments += $wmiDomain[0].DomainName
+                $segments += $wmiDomain[0].DnsForestName.Split('.')
                 $OU = "OU=OrgUsers, {0}" -f [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
                 
                 $folder=$using:DscWorkingFolder

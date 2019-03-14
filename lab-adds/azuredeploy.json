@@ -92,6 +92,7 @@
     "nsgTemplateURI": "[concat(parameters('assetLocation'),'Templates/NSGs.json')]",
     "vnetTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNet.json')]",
     "vnetDNSTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNetDNS.json')]",
+    "vnet2ndDNSTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNetDNS2nd.json')]",
     "adDSCTemplate": "[concat(parameters('assetLocation'),'DSC/adDSC.zip')]",
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
     "subnets": [
@@ -236,7 +237,7 @@
       ],
       "properties": {
         "mode": "Incremental",
-        "templateLink": { "uri": "[variables('vnetDNSTemplateURI')]" },
+        "templateLink": { "uri": "[variables('vnet2ndDNSTemplateURI')]" },
         "parameters": {
           "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
           "subnets": { "value": "[variables('subnets') ]" },
