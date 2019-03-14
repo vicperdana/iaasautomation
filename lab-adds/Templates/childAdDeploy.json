@@ -249,9 +249,9 @@
   ],
   "outputs": {
     "ADVMFQDN": {
-        "type": "string",
-        "value": "[reference(parameters('childAdVMName')).DnsSettings.Fqdn]"
-    },
+      "type": "string",
+      "value": "[reference(variables('adPubIPName')).DnsSettings.Fqdn]"
+  },
     "ADVMNIC": {
       "type": "object",
       "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('adNicName')))]"
