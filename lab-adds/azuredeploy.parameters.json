@@ -1,0 +1,26 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "assetLocation": { "value": "https://raw.githubusercontent.com/vicperdana/iaasautomation/master/lab-adds/" },
+    "adminUsername": { "value": "vperdana" },
+    "deploymentNumber": {"value": "1" },
+    "adminPassword": { "value": "Pass1234##!!"},
+    "adDomainName": { "value": "vperdana.lab" },
+    "childAdDomainName": { "value": "child" },
+    "usersArray": {
+      "value": [
+        { "FName": "Bob", "LName": "Jones", "SAM": "bjones" },
+        { "FName": "Bill", "LName": "Smith", "SAM": "bsmith" },
+        { "FName": "Mary", "LName": "Phillips", "SAM": "mphillips" },
+        { "FName": "Sue", "LName": "Jackson", "SAM": "sjackson" }
+      ]
+    },
+    "defaultUserPassword": { "value" : "P@ssw0rd" },
+    "vmSize": { "value": "Standard_A2_v2" },
+    "virtualNetworkAddressRange": { "value": "10.0.0.0/16" },
+    "adSubnetAddressRange": { "value": "10.0.1.0/24" },
+    "dmzSubnetAddressRange": { "value": "10.0.2.0/24"},
+    "cliSubnetAddressRange": { "value": "10.0.3.0/24" }
+  }
+}

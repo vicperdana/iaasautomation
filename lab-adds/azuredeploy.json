@@ -70,11 +70,6 @@
       "type": "string",
       "metadata": { "description": "The address range of the desired subnet for clients." },
       "defaultValue": "10.0.3.0/24"
-    },
-    "numOfDC" : {
-      "type" : "int",
-      "metadata": { "description" : "The number of domain controllers we will build"},
-      "defaultValue": 2
     }
   },
   "variables": {
