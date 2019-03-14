@@ -56,6 +56,7 @@ $TemplateFile = "$($assetLocation)$templateToDeploy" + "?x=5"
 $templateFile
 
 $TemplateParamFile = "$($assetLocation)$templateParamToDeploy" + "?x=5"
+$TemplateParamFile
 
 try {
     Get-AzureRmResourceGroup -Name $RGName -ErrorAction Stop
@@ -66,7 +67,7 @@ catch {
     Write-Host "Created new resource group $RGName."
 }
 $version ++
-$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterFile $TemplateParamFile -TemplateFile $TemplateFile -Name "addsDeploy$version"  -Force -Verbose
+$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -templateUri $TemplateFile -TemplateParameterUri $TemplateParamFile -Name "addsDeploy$version"  -Force -Verbose
 
 
 $endTime=Get-Date
