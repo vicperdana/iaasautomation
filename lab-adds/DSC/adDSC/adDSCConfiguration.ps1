@@ -52,7 +52,11 @@ configuration DomainController
             }
             GetScript =  { @{} }
             TestScript = { 
-                $test=Get-ADOrganizationalUnit -Filter 'Name -like "OrgUsers"' -ErrorAction SilentlyContinue
+                $wmiDomain = $using:wmiDomain
+                $shortDomain    = $wmiDomain[0].DomainName
+                $DomainName     = $wmidomain[0].DnsForestName
+                $ComputerName   = $wmiDomain[0].PSComputerName
+                $test=Get-ADOrganizationalUnit -Server "$ComputerName.$shortdomain.$DomainName" -Filter 'Name -like "OrgUsers"'
                 return ($test -ine $null)
             }
         }
