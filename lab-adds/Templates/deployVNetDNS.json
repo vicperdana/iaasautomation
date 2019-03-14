@@ -9,13 +9,34 @@
       "defaultValue": "10.0.0.0/16"
     },
     "subnets": { "type": "array" },
-    "dnsIP": { "type": "array" }
+    "dnsIP": { "type": "string" },
+    "dnsIP2": { "type": "string" }
   },
   "variables": {
     "location": "[resourceGroup().location]"
   },
   "resources": [
     {
+      "condition" : "[not(empty(parameters('dnsIP2')))]",
+      "name": "[parameters('virtualNetworkName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[variables('location')]",
+      "tags": { "displayName": "virtualNetwork" },
+      "apiVersion": "2015-06-15",
+      "properties": {
+        "dhcpOptions": {
+          "dnsServers": [ "[parameters('dnsIP')]","[parameters('dnsIP2')]" ]
+        },
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressRange')]"
+          ]
+        },
+        "subnets": "[parameters('subnets')]"
+      }
+    },
+    {
+      "condition" : "[empty(parameters('dnsIP2'))]",
       "name": "[parameters('virtualNetworkName')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[variables('location')]",

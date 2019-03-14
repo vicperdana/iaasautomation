@@ -242,11 +242,11 @@
           "subnets": { "value": "[variables('subnets') ]" },
           "virtualNetworkAddressRange": { "value": "[parameters('virtualNetworkAddressRange')]" },
           "dnsIP": {
-            "value" : [
-              "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]",
-              "[reference('childAdVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]"
-            ]
-          }    
+            "value" : "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "dnsIP2": {
+            "value" : "[reference('childAdVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]"
+          }     
         }
       }
     }
