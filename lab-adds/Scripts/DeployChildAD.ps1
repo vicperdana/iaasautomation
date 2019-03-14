@@ -6,7 +6,10 @@ param (
     [string]$password,
 
     [Parameter(Mandatory)]
-    [string]$childDomain
+    [string]$childDomain,
+
+    [Parameter(Mandatory)]
+    [string]$adminUsername
 
 )
 
@@ -51,15 +54,15 @@ $step=2
 if (!(Test-Path -Path "$($completeFile)$step")) {
     $smPassword = (ConvertTo-SecureString $password -AsPlainText -Force)
 
-    #Install AD, reconfig network
+    #Install AD
     Install-WindowsFeature -Name "AD-Domain-Services" `
                            -IncludeManagementTools `
                            -IncludeAllSubFeature 
 
     #Install AD Child domain
+    [System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("$domain\$adminUsername", $smPassword)
     
-    Install-ADDSDomain -CreateDnsDelegation `
-                       -DomainMode Default `
+    Install-ADDSDomain -DomainMode Default `
                        -DomainType ChildDomain `
                        -NewDomainName $childDomain `
                        -NewDomainNetBIOSName $childDomain `
@@ -67,6 +70,7 @@ if (!(Test-Path -Path "$($completeFile)$step")) {
                        -InstallDNS:$true `
                        -Force:$true `
                        -SafeModeAdministratorPassword $smPassword `
+                       -Credential $DomainCreds
 
     #record that we got this far
     New-Item -ItemType file "$($completeFile)$step"

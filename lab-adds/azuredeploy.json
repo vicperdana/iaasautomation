@@ -224,9 +224,16 @@
         "templateLink": { "uri": "[variables('vnetDNSTemplateURI')]" },
         "parameters": {
           "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
-          "subnets": { "value": "[ variables('subnets') ]" },
+          "subnets": { "value": "[variables('subnets') ]" },
           "virtualNetworkAddressRange": { "value": "[parameters('virtualNetworkAddressRange')]" },
-          "dnsIP": { "value": "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]" }
+          "dnsIP": {
+            "value" : [
+              "[reference('adVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]",
+              "[reference('childAdVM', '2017-05-10').outputs.ADVMNIC.value.ipConfigurations[0].properties.privateIPAddress]"
+            ]
+          }
+          
+        
         }
       }
     }
