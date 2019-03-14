@@ -11,7 +11,7 @@ Import-Module Azure -ErrorAction SilentlyContinue
 
     # Must be unique for simultaneous/co-existing deployments
     #"master" or "dev"
-    $RGName                  = "rg-addslab"
+    $RGName                  = "rg-addslab1"
     $DeployRegion            = "eastus"
     $Branch                  = "master"
     $AssetLocation           = "https://raw.githubusercontent.com/vicperdana/iaasautomation/master/lab-adds/"
