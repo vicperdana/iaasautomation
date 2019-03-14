@@ -13,7 +13,7 @@
         "secretName": "adminPassword"
       }
     },
-    "adDomainName": { "value": "vsperdana.lab" },
+    "adDomainName": { "value": "vxperdana.lab" },
     "childAdDomainName": { "value": "child" },
     "usersArray": {
       "value": [
