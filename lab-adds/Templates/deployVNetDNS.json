@@ -10,14 +10,17 @@
     },
     "subnets": { "type": "array" },
     "dnsIP": { "type": "string" },
-    "dnsIP2": { "type": "string" }
+    "dnsIP2": { 
+      "type": "string",
+      "defaultValue": "null"
+    }
   },
   "variables": {
     "location": "[resourceGroup().location]"
   },
   "resources": [
     {
-      "condition" : "[not(empty(parameters('dnsIP2')))]",
+      "condition" : "[not(equals(parameters('dnsIP2'), 'null'))]",
       "name": "[parameters('virtualNetworkName')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[variables('location')]",
@@ -36,7 +39,7 @@
       }
     },
     {
-      "condition" : "[empty(parameters('dnsIP2'))]",
+      "condition" : "[equals(parameters('dnsIP2'), 'null')]",
       "name": "[parameters('virtualNetworkName')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[variables('location')]",
