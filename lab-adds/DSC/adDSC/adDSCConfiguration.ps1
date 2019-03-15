@@ -29,6 +29,7 @@ configuration DomainController
     $shortDomain    = $childDomain
     $DomainName     = $domain
     $ComputerName   = $wmiDomain[0].PSComputerName
+    $server="$ComputerName.$shortdomain.$DomainName"
 
     $CertPw         = $AdminCreds.Password
     $ClearPw        = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($CertPw))
@@ -50,19 +51,18 @@ configuration DomainController
         {
             SetScript = {
                 $wmiDomain = $using:wmiDomain
-                $segments = @()
-                $segments += $using:shortDomain 
-                $segments += ($using:DomainName).Split('.')
-                $path = [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
-                New-ADOrganizationalUnit -Name "OrgUsers" -Path $path
-            }
-            GetScript =  { @{} }
-            TestScript = { 
-                $wmiDomain = $using:wmiDomain
                 $shortDomain    = $using:shortDomain
                 $DomainName     = $using:DomainName
                 $ComputerName   = $wmiDomain[0].PSComputerName
-                $test=Get-ADOrganizationalUnit -Server "$ComputerName.$shortdomain.$DomainName" -Filter 'Name -like "OrgUsers"'
+                $segments = @()
+                $segments += $shortDomain
+                $segments += ($DomainName).Split('.')
+                $path = [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
+                New-ADOrganizationalUnit -Name "OrgUsers" -Path $path -Server $using:Server
+            }
+            GetScript =  { @{} }
+            TestScript = {                 
+                $test=Get-ADOrganizationalUnit -Server $using:Server -Filter 'Name -like "OrgUsers"'
                 return ($test -ine $null)
             }
         }
@@ -116,7 +116,7 @@ configuration DomainController
             TestScript = { 
 				$Users = $using:usersArray
                 $samname=$Users[0].'SAM'
-                $user = get-aduser -filter {SamAccountName -eq $samname} -ErrorAction SilentlyContinue
+                $user = get-aduser -filter {SamAccountName -eq $samname} -server $using:Server -ErrorAction SilentlyContinue
                 return ($user -ine $null)
             }
             DependsOn  = '[Script]CreateOU'
@@ -131,18 +131,18 @@ configuration DomainController
                 $OU = "OU=OrgUsers, {0}" -f [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
                 $Users = $using:usersArray
 
-                New-ADGroup -Name "Finance" -SamAccountName Finance -GroupCategory Security -GroupScope Global -DisplayName "Finance" -Path $ou -Description "Members of this group are Finance staff"
+                New-ADGroup -Name "Finance" -SamAccountName Finance -GroupCategory Security -GroupScope Global -DisplayName "Finance" -Path $ou -Description "Members of this group are Finance staff" -Server $using:Server
 
-                New-ADGroup -Name "HR" -SamAccountName HR -GroupCategory Security -GroupScope Global -DisplayName "HR" -Path $ou -Description "Members of this group are HR staff"
+                New-ADGroup -Name "HR" -SamAccountName HR -GroupCategory Security -GroupScope Global -DisplayName "HR" -Path $ou -Description "Members of this group are HR staff" -server $using:Server
 
-                Add-ADgroupMember -Identity Finance -Members $users[0].'SAM',$users[1].'SAM'
-                Add-ADgroupMember -Identity HR -Members $users[2].'SAM'
+                Add-ADgroupMember -Identity Finance -Members $users[0].'SAM',$users[1].'SAM' -server $using:Server
+                Add-ADgroupMember -Identity HR -Members $users[2].'SAM' -server $using:Server
 
 
             }
             GetScript =  { @{} }
             TestScript = { 
-				$group = get-adgroup -filter {samaccountname -eq "finance"}
+				$group = get-adgroup -filter {samaccountname -eq "finance"} -server $using:Server
                 return ($group -ine $null)
             }
             DependsOn  = '[Script]AddTestUsers'
