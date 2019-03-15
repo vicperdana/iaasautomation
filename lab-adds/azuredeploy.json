@@ -299,7 +299,7 @@
               "TypeName": "string"
             },
             {
-              "Name": "usersArray",
+              "Name": "childDomain",
               "Value": "[parameters('childAdDomainName')]",
               "TypeName": "string"
             }
