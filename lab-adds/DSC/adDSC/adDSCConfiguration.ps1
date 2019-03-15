@@ -13,6 +13,12 @@ configuration DomainController
 
 		[Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$UserCreds,
+
+        [Parameter(Mandatory)]
+        [string]$domain,
+
+        [Parameter(Mandatory)]
+        [string]$childDomain,
         
     
         [Int]$RetryCount=20,
@@ -20,8 +26,8 @@ configuration DomainController
     )
 
     $wmiDomain      = Get-WmiObject Win32_NTDomain
-    $shortDomain    = $wmiDomain[0].DomainName
-    $DomainName     = $wmidomain[0].DnsForestName
+    $shortDomain    = $childDomain
+    $DomainName     = $domain
     $ComputerName   = $wmiDomain[0].PSComputerName
 
     $CertPw         = $AdminCreds.Password
@@ -45,16 +51,16 @@ configuration DomainController
             SetScript = {
                 $wmiDomain = $using:wmiDomain
                 $segments = @()
-                $segments += $wmiDomain[0].DomainName
-                $segments += $wmiDomain[0].DnsForestName.Split('.')
+                $segments += $using:shortDomain 
+                $segments += ($using:DomainName).Split('.')
                 $path = [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
                 New-ADOrganizationalUnit -Name "OrgUsers" -Path $path
             }
             GetScript =  { @{} }
             TestScript = { 
                 $wmiDomain = $using:wmiDomain
-                $shortDomain    = $wmiDomain[0].DomainName
-                $DomainName     = $wmidomain[0].DnsForestName
+                $shortDomain    = $using:shortDomain
+                $DomainName     = $using:DomainName
                 $ComputerName   = $wmiDomain[0].PSComputerName
                 $test=Get-ADOrganizationalUnit -Server "$ComputerName.$shortdomain.$DomainName" -Filter 'Name -like "OrgUsers"'
                 return ($test -ine $null)
@@ -64,12 +70,15 @@ configuration DomainController
         Script AddTestUsers
         {
             SetScript = {
-                $wmiDomain = Get-WmiObject Win32_NTDomain
-                $mailDomain=(Get-WmiObject Win32_ComputerSystem).Domain
-                $server="$($wmiDomain[0].PSComputerName).$($wmiDomain[0].DomainName).$($wmiDomain[0].DnsForestName)"
+                $wmiDomain = $using:wmiDomain
+                $shortDomain    = $using:shortDomain
+                $DomainName     = $using:DomainName
+                $ComputerName   = $wmiDomain[0].PSComputerName
+                $mailDomain=$shortdomain.$DomainName
+                $server="$ComputerName.$shortdomain.$DomainName"
                 $segments = @()
-                $segments += $wmiDomain[0].DomainName
-                $segments += $wmiDomain[0].DnsForestName.Split('.')
+                $segments += $using:shortDomain 
+                $segments += ($using:DomainName).Split('.')
                 $OU = "OU=OrgUsers, {0}" -f [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
                 
                 $folder=$using:DscWorkingFolder
@@ -115,10 +124,9 @@ configuration DomainController
         Script AddGroups
         {
             SetScript = {
-                $wmiDomain = Get-WmiObject Win32_NTDomain
                 $segments = @()
-                $segments += $wmiDomain[0].DomainName
-                $segments += $wmiDomain[0].DnsForestName.Split('.')
+                $segments += $using:shortDomain 
+                $segments += ($using:DomainName).Split('.')
                 
                 $OU = "OU=OrgUsers, {0}" -f [string]::Join(", ", ($segments | % { "DC={0}" -f $_ }))
                 $Users = $using:usersArray
