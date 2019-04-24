@@ -8,7 +8,7 @@ param (
 )
 
 $ErrorActionPreference = "Stop"
-$azurevm = Get-AzureRMVM -ResourceGroupName $resGroupName -Name $vmName
+$azurevm = Get-AzureRMVM -ResourceGroupName $ResourceGroupName -Name $vmName
 #Write-output "AzureVM variable :" $azurevm
 $NicId = $azurevm | foreach {$_.NetworkProfile.NetworkInterfaces.Id}
 #Write-output "NicId variable $NicId"
