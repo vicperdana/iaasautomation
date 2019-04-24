@@ -3,7 +3,7 @@ param (
     [string]$VMName,
 
     [Parameter(Mandatory)]
-    [string]$ResourceGroup
+    [string]$ResourceGroupName
 
 )
 
