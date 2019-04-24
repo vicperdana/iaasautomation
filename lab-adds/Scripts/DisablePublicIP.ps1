@@ -3,7 +3,7 @@ param (
     [string]$VMName,
 
     [Parameter(Mandatory)]
-    [string]$ResourceGroupName
+    [string]$ResourceGroupName = "rg-addsdevenv"
 
 )
 
