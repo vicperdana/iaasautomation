@@ -16,6 +16,6 @@
     "vmSize": { "value": "Standard_A2_v2" },
     "virtualNetworkName": { "value": "vperdana1-vnet" },
     "jhVMName" : { "value": "vperdanajh"},
-    "jhSubnetName" : { "value": "dmzSubnet-1"}
+    "jhSubnetName" : { "value": "dmzsubnet-1"}
   }
 }
