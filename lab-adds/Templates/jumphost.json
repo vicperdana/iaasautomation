@@ -1,0 +1,230 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "adminPassword": {
+        "type": "securestring",
+        "metadata": { "description": "Admin password" }
+      },
+      "adminUsername": {
+        "type": "string",
+        "metadata": { "description": "Admin username" }
+      },
+      "deploymentNumber": {
+        "type": "string",
+        "defaultValue": "1",
+        "metadata": { "description": "When deploying the stack N times, define the instance - this will be appended to some resource names to avoid collisions." }
+      },
+      "jhSubnetName": {
+        "type": "string",
+        "defaultValue": "[concat('adSubnet', parameters('deploymentNumber'))]"
+      },
+      "jhVMName": {
+        "type": "string",
+        "defaultValue": "AZAD"
+      },
+      "assetLocation": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]",
+        "metadata": { "Description": "The region to deploy the resources into" }
+      },
+      "NetworkInterfaceName": {
+        "type": "string",
+        "defaultValue": "NIC",
+        "metadata": { "description": "This is the prefix name of the Network interfaces" }
+      },
+      "virtualNetworkName": {
+        "type": "string",
+        "defaultValue": "vperdana1-vnet"
+      },
+      "vmSize": {
+        "type": "string",
+        "defaultValue": "Standard_D1_v2",
+        "metadata": { "description": "This is the allowed list of VM sizes" }
+      },
+      "vmsAutoShutdownTime": {
+        "type": "string",
+        "defaultValue": "1900",
+        "minLength": 4,
+        "maxLength": 4,
+        "metadata": {
+          "description": "The time at which VMs will be automatically shutdown (24h HHmm format). Set value to '9999' to NOT configure the auto shutdown."
+        }
+      },
+      "vmsTimeZone": {
+        "type": "string",
+        "defaultValue": "AUS Eastern Standard Time",
+        "minLength": 2,
+        "metadata": {
+          "description": "Time zone of the VMs. Type '[TimeZoneInfo]::GetSystemTimeZones().Id' in PowerShell to get the list. Note that 'UTC' works but 'UTC+xx' does NOT work."
+        }
+      }
+    },
+    "variables": {
+      "jhSubnetID": "[concat(variables('vnetID'),'/subnets/', parameters('jhSubnetName'))]",
+      "jhSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('jhSubnetName'))]",
+      "imageOffer": "WindowsServer",
+      "imagePublisher": "MicrosoftWindowsServer",
+      "imageSKU": "2016-Datacenter",
+      "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+      "jhPubIPName": "[concat('adPubIP', parameters('deploymentNumber'))]",
+      "jhNicName": "[concat('ad-',parameters('NetworkInterfaceName'), parameters('deploymentNumber'))]",
+      "computeApiVersion": "2018-04-01",
+      "updateip_templateUri" : "[concat(parameters('assetLocation'), 'Templates/nested/update-nic.json')]",
+      "storageaccountType": "StandardSSD_LRS"    
+    },
+    "resources": [
+      {
+        "name": "[variables('jhPubIPName')]",
+        "type": "Microsoft.Network/publicIPAddresses",
+        "location": "[parameters('location')]",
+        "apiVersion": "2015-06-15",
+        "tags": {
+          "displayName": "adPubIP"
+        },
+        "properties": {
+          "publicIPAllocationMethod": "Dynamic",
+          "dnsSettings": {
+            "domainNameLabel": "[tolower(concat(parameters('jhVMName'), parameters('deploymentNumber')))]"
+          }
+        }
+      },
+      {
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[variables('jhNicName')]",
+        "location": "[parameters('location')]",
+        "tags": { "displayName": "adNIC" },
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/publicIPAddresses', variables('jhPubIPName'))]"
+        ],
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "[concat('ipconfig', parameters('deploymentNumber'))]",
+              "properties": {
+                "privateIPAllocationMethod": "Dynamic",
+                "subnet": {
+                  "id": "[variables('jhSubnetID')]"
+                },
+                "publicIPAddress": {
+                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('jhPubIPName'))]"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "apiVersion": "2018-04-01",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[parameters('jhVMName')]",
+        "location": "[parameters('location')]",
+        "tags": { "displayName": "jhVM" },
+        "dependsOn": [
+          "[concat('Microsoft.Network/networkInterfaces/', variables('jhNicName'))]"
+        ],
+        "properties": {
+          "hardwareProfile": {
+            "vmSize": "[parameters('vmSize')]"
+          },
+          "osProfile": {
+            "computerName": "[parameters('jhVMName')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]",
+            "windowsConfiguration" : {
+              "timeZone": "[parameters('vmsTimeZone')]"
+            }
+          },
+          "storageProfile": {
+            "imageReference": {
+              "publisher": "[variables('imagePublisher')]",
+              "offer": "[variables('imageOffer')]",
+              "sku": "[variables('imageSKU')]",
+              "version": "latest"
+            },
+            "osDisk": {
+              "caching": "ReadWrite",
+              "createOption": "FromImage",
+              "managedDisk": {
+                "storageAccountType": "[variables('storageaccountType')]"
+             }
+            }
+          },
+          "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[resourceid('Microsoft.Network/networkInterfaces', variables('jhNicName'))]"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "name": "updateIp",
+        "apiVersion": "2017-08-01",
+        "dependsOn": [
+          "[variables('jhNicName')]"
+        ],
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "[variables('updateip_templateUri')]",
+            "contentVersion": "1.0.0.0"
+          },
+          "parameters": {
+            "nicName": {
+              "value": "[variables('jhNicName')]"
+            },
+            "SubnetRef": {
+              "value": "[variables('jhSubnetRef')]"
+            },
+            "privateIp": {
+              "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('jhNicName'))).ipConfigurations[0].properties.privateIPAddress]"
+            },
+            "publicIPId" : {
+              "value": "[resourceId('Microsoft.Network/publicIPAddresses', variables('jhPubIPName'))]"
+            }
+          }
+        }
+      },
+      {
+        "condition": "[not(equals(parameters('vmsAutoShutdownTime'), '9999'))]",
+        "type": "Microsoft.DevTestLab/schedules",
+        "name": "[concat('shutdown-computevm-', parameters('jhVMName'))]",
+        "apiVersion": "2016-05-15",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Compute/virtualMachines', parameters('jhVMName'))]"
+        ],
+        "properties": {
+          "status": "Enabled",
+          "taskType": "ComputeVmShutdownTask",
+          "dailyRecurrence": {
+            "time": "[parameters('vmsAutoShutdownTime')]"
+          },
+          "timeZoneId": "[parameters('vmsTimeZone')]",
+          "notificationSettings": {
+            "status": "Disabled",
+            "timeInMinutes": 30
+          },
+          "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('jhVMName'))]"
+        }
+      }
+    ],
+    "outputs": {
+      "JHVMFQDN": {
+          "type": "string",
+          "value": "[reference(variables('jhPubIPName')).DnsSettings.Fqdn]"
+      },
+      "JHVMNIC": {
+        "type": "object",
+        "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('jhNicName')))]"
+    }
+    }
+  }
+  
