@@ -1,0 +1,2 @@
+New-AzureRmResourceGroup  -Name "rg-jenkinsBuildPoC" -Location "australiaeast" -Tag @{Environment="Dev"; Purpose="JenkinsPoC"}
+New-AzureRmResourceGroupDeployment -name jenkinsTest -ResourceGroupName "rg-jenkinsBuildPoC" -TemplateFile "C:\Users\viperdan\OneDrive - Microsoft\03-CodeRepo\temp\functions\azuredeploy.json" -TemplateParameterFile "C:\Users\viperdan\OneDrive - Microsoft\03-CodeRepo\temp\functions\azuredeploy.parameters.json"
