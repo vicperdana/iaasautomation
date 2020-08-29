@@ -8,7 +8,7 @@
     "adminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/6d1eca2e-45dc-4dab-836a-49ee682dd37e/resourceGroups/rg-addslabdevops/providers/Microsoft.KeyVault/vaults/kvdevopslab"
+          "id": "<your KeyVault Resource Id>"
         },
         "secretName": "adminPassword"
       }
@@ -26,7 +26,7 @@
     "defaultUserPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/6d1eca2e-45dc-4dab-836a-49ee682dd37e/resourceGroups/rg-addslabdevops/providers/Microsoft.KeyVault/vaults/kvdevopslab"
+          "id": "<your KeyVault Resource Id>"
         },
         "secretName": "defaultUserPassword"
       }
