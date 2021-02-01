@@ -30,24 +30,7 @@
   }
 ],
     "variables": {},
-    "resources":[ 
-    {
-        "name": "DeployNetworkWatcher",
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2019-10-01",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat('artifactsLocation', '/lab-iac/modular/NetworkWatcher.json')]",
-                "contentVersion": "1.0.0.0"
-            },
-            "parameters": {
-                "networkWatcherName" : {
-                    "value" : "testNetWatcher"
-                }
-            }
-        }
-    },
+    "resources":[
     {
         "name": "DeployPublicIP",
         "type": "Microsoft.Resources/deployments",
@@ -55,7 +38,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat('artifactsLocation', '/lab-iac/modular/PublicIP.json')]",
+                "uri": "[concat(parameters('artifactsLocation'), '/lab-iac/modular/PublicIP.json')]",
                 "contentVersion": "1.0.0.0"
             },
             "parameters": {
@@ -72,7 +55,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat('artifactsLocation', '/lab-iac/modular/StorageAccount.json')]",
+                "uri": "[concat(parameters('artifactsLocation'), '/lab-iac/modular/StorageAccount.json')]",
                 "contentVersion": "1.0.0.0"
             }
         }
