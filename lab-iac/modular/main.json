@@ -4,7 +4,7 @@
     "parameters": {
         "artifactsLocation": {
             "type": "string",
-            "defaultValue" : "",
+            "defaultValue" : "https://raw.githubusercontent.com/vicperdana/iaasautomation/develop",
             "metadata": {
                 "description": "Base URL of the linked template"
             }
